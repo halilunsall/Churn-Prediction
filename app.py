@@ -19,29 +19,24 @@ def html_options(text=None, align="left", size=12, weight="normal", style="norma
         image_style = f"background-color:{image_bg_color};" if image_bg_color else ""
         st.markdown(f"""<div style="text-align: {align};"><img width="{image_width}" height="{image_height}" src="{image_source}" style="{image_style}" /></a></div>""", unsafe_allow_html=True)
 
-st.sidebar.image("images_dark/theme.png")
+st.sidebar.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/theme.png")
 select_theme = st.sidebar.radio('', ['Dark', 'Light'])
 
 # HEAD TO PICTURE
 if select_theme=='Dark':
-    st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/Contact%20LIVED.png")
+    st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20churn%20prediction.png")
 else:
-    st.image("images_light\Employee churn prediction.png")
+    st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Employee%20churn%20prediction.png")
 st.write('')
 st.write('')
-
-with open("C:/Users/hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/openai_api.txt") as file:
-    content = file.read()
-
-
 
 
 # SIDEBAR 
 with st.sidebar:
     if select_theme == 'Dark':
-        st.image("images_dark\Employee Information.png")
+        st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20Information.png")
     else:
-        st.image("images_light\Employee Information.png")
+        st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Employee%20Information.png")
     st.write('')
     Departments = st.sidebar.selectbox('Department', ['Select','Sales', 'Technical', 'Support', 'IT', 'Research and Development','Product Manager', 'Marketing', "Accounting", "Human Resources", "Management", "Others"])
     st.write('')
@@ -102,7 +97,7 @@ st.write('')
 st.table(show_df)
 
 # ChatGPT
-with open("C:/Users\hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/openai_api.txt") as file:
+with open("openai_api.txt") as file:
     openai.api_key = file.read()
 
 
@@ -126,7 +121,7 @@ def CustomGPT():
     message = st.text_input("")
 
     if message:
-        with open("C:/Users/hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/messages.txt", "a") as file:
+        with open("messages.txt", "a") as file:
             file.write(message+"\n")
         messages.append({"role":"system", "content":message})
         response = openai.ChatCompletion.create(
@@ -135,7 +130,7 @@ def CustomGPT():
             )
         gpt_reply = response["choices"][0]["message"]["content"]
 
-        with open("C:/Users/hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/replys.txt", "a") as file:
+        with open("replys.txt", "a") as file:
             file.write(gpt_reply+ "\n")
 
         messages.append({"role":"system", "content":gpt_reply})
@@ -151,15 +146,15 @@ if predict:
         result = model_churn.predict(model_df)[0]
         if result == 1:
             if select_theme == 'Dark':
-                st.image("images_dark/true.png")
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/true.png")
             else:
-                st.image("images_light/true.png")
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/true.png")
             AdviceGPT()
         else:
             if select_theme == 'Dark':
-                st.image("images_dark/false.png")
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/false.png")
             else:
-                st.image("images_light/false.png")
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/false.png")
             AdviceGPT()
 
 
@@ -169,20 +164,20 @@ st.write("")
 st.write("")
 st.write("")
 if select_theme == 'Dark':
-    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/Contact%20LIVED.png', align='center', image_width=200)
+    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Contact%20LIVED.png', align='center', image_width=200)
 else:
-    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/Contact%20LIVEL.png', align='center', image_width=200)
+    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Contact%20LIVEL.png', align='center', image_width=200)
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 chat = col5.button(':green[CHAT]')
 
 
 CustomGPT()
-with open("C:/Users/hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/messages.txt", "r") as file:
+with open("messages.txt", "r") as file:
     mes = file.read()
     st.info("User: "+mes.strip().split('\n')[-1])
-with open("C:/Users/hibrahim/Desktop/Clarusway/DS/DS - Capstone - 2/replys.txt", "r") as file:
+with open("replys.txt", "r") as file:
     rep = file.read()
-    st.info("AI: "+rep.strip().split('\n')[-1])
+    st.info("Customer Support: "+rep.strip().split('\n')[-1])
 
 
 
