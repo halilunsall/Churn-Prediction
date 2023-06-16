@@ -36,6 +36,7 @@ def generate_filename():
     minute = now.minute
     filename = f"employee_churn_{hour}_{minute}.pdf"
     return filename
+
 def html_options(text=None, align="left", size=12, weight="normal", style="normal", color="#F4A460", bg_color=None, bg_size=16, on='main', to_link=None, image_width=None, image_height=None, image_source=None, image_bg_color=None):
     if on == 'main':
         st.markdown(f"""<div style="background-color:{bg_color};padding:{bg_size}px">
@@ -45,9 +46,12 @@ def html_options(text=None, align="left", size=12, weight="normal", style="norma
         st.sidebar.markdown(f"""<div style="background-color:{bg_color};padding:{bg_size}px">
         <h2 style='text-align: {align}; font-size: {size}px; font-weight: {weight}; font-style: {style}; color: {color};'>{text} </h2>
         </div>""", unsafe_allow_html=True)
-    elif on == 'link':
+    elif on == 'image':
         image_style = f"background-color:{image_bg_color};" if image_bg_color else ""
         st.markdown(f"""<div style="text-align: {align};"><img width="{image_width}" height="{image_height}" src="{image_source}" style="{image_style}" /></a></div>""", unsafe_allow_html=True)
+    elif on == 'link':
+        image_style = f"background-color:{image_bg_color};" if image_bg_color else ""
+        st.markdown(f"""<div style="text-align: {align};"> <a href="{to_link}"><img width="{image_width}" height="{image_height}" src="{image_source}" style="{image_style}" /></a></div>""", unsafe_allow_html=True)
 
 
 st.sidebar.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/theme.png")
@@ -225,9 +229,9 @@ st.write("")
 st.write("")
 st.write("")
 if select_theme == 'Dark':
-    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Contact%20LIVED.png', align='center', image_width=200)
+    html_options(on='image', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Contact%20LIVED.png', align='center', image_width=200)
 else:
-    html_options(on='link', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Contact%20LIVEL.png', align='center', image_width=200)
+    html_options(on='image', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Contact%20LIVEL.png', align='center', image_width=200)
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 chat = col5.button(':green[CHAT]')
 
@@ -239,3 +243,13 @@ with open("messages.txt", "r") as file:
 with open("replys.txt", "r") as file:
     rep = file.read()
     st.info("Customer Support: "+rep.strip().split('\n')[-1])
+
+st.write('')
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    html_options(on='link', to_link='https://www.linkedin.com/in/halilibrahimunsal/', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/linkedin.png")
+with col2:
+    html_options(on='link', to_link='https://github.com/halilunsall', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/git.png")
+with col3:
+    html_options(on='link', to_link='https://public.tableau.com/app/profile/halilunsal', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/tableau.png")
