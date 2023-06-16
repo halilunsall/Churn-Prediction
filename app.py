@@ -173,6 +173,8 @@ def AdviceGPT():
         st.download_button("Download PDF", f.read(), file_name=filename, mime="application/pdf")
 
 
+messages_cust = [{"role":"system", "content":"Write as if you are the customer support team of a company and imagine that you are talking to the customer. And your name is Tony."}]
+
 def CustomGPT():
 
     message = st.text_input("")
@@ -180,17 +182,17 @@ def CustomGPT():
     if message:
         with open("messages.txt", "a") as file:
             file.write(message+"\n")
-        messages.append({"role":"system", "content":message})
+        messages_cust.append({"role":"system", "content":message})
         response = openai.ChatCompletion.create(
                 model="gpt-3.5-turbo",
-                messages=messages
+                messages=messages_cust
             )
         gpt_reply = response["choices"][0]["message"]["content"]
 
         with open("replys.txt", "a") as file:
             file.write(gpt_reply+ "\n")
 
-        messages.append({"role":"system", "content":gpt_reply})
+        messages_cust.append({"role":"system", "content":gpt_reply})
 
 
 # PREDICTION
