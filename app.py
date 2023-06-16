@@ -1,11 +1,41 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from PIL import Image
 import pickle
 import openai
 import os
 
+# Creating PDF
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.enums import TA_CENTER
+
+# To add date to the title of PDF file
+from datetime import datetime
+
+# Creating Word
+from docx import Document
+from docx.shared import Inches
+
+def generate_pdf(text,filename='output.pdf'):
+    doc = SimpleDocTemplate(filename, pagesize=letter)
+    styles = getSampleStyleSheet()
+    style = styles["Normal"]
+    paragraphs = [Paragraph("<font size='12'>" + p.strip() + "</font>", style) for p in text.split("\n\n")]
+    flowables = []
+    for p in paragraphs:
+        flowables.append(p)
+        flowables.append(Spacer(1, 12))
+    doc.build(flowables)
+    return doc
+
+def generate_filename():
+    now = datetime.now()
+    hour = now.hour
+    minute = now.minute
+    filename = f"employee_churn_{hour}_{minute}.pdf"
+    return filename
 def html_options(text=None, align="left", size=12, weight="normal", style="normal", color="#F4A460", bg_color=None, bg_size=16, on='main', to_link=None, image_width=None, image_height=None, image_source=None, image_bg_color=None):
     if on == 'main':
         st.markdown(f"""<div style="background-color:{bg_color};padding:{bg_size}px">
@@ -19,8 +49,23 @@ def html_options(text=None, align="left", size=12, weight="normal", style="norma
         image_style = f"background-color:{image_bg_color};" if image_bg_color else ""
         st.markdown(f"""<div style="text-align: {align};"><img width="{image_width}" height="{image_height}" src="{image_source}" style="{image_style}" /></a></div>""", unsafe_allow_html=True)
 
+
 st.sidebar.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/theme.png")
 select_theme = st.sidebar.radio('', ['Dark', 'Light'])
+
+statistical_findings = [
+  "There is a significant difference in average values between employees who left and those who stayed for column satisfaction_level.",
+  "There is no significant difference in average values between employees who left and those who stayed for column last_evaluation.",
+  "There is no significant difference in average values between employees who left and those who stayed for column number_project.",
+  "There is a significant difference in average values between employees who left and those who stayed for column average_montly_hours.",
+  "There is a significant difference in average values between employees who left and those who stayed for column time_spend_company.",
+  "There is a significant difference in average values between employees who left and those who stayed for column Work_accident.",
+  "There is a significant difference in average values between employees who left and those who stayed for column promotion_last_5years.",
+  "There is a significant difference in average values between employees who left and those who stayed for column left.",
+  "There is evidence to suggest a significant difference in the proportion of employees who left the company based on whether they had a work accident or not.",
+  "There is a significant difference in the average satisfaction level between employees who had a work accident and those who didn't.",
+  "There is a statistically significant association between the salary level of employees and the likelihood of them leaving the company."
+]
 
 # HEAD TO PICTURE
 if select_theme=='Dark':
@@ -38,23 +83,23 @@ with st.sidebar:
     else:
         st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Employee%20Information.png")
     st.write('')
-    Departments = st.sidebar.selectbox('Department', ['Select','Sales', 'Technical', 'Support', 'IT', 'Research and Development','Product Manager', 'Marketing', "Accounting", "Human Resources", "Management", "Others"])
+    Departments = st.selectbox('Department', ['Select','Sales', 'Technical', 'Support', 'IT', 'Research and Development','Product Manager', 'Marketing', "Accounting", "Human Resources", "Management", "Others"])
     st.write('')
-    salary = st.sidebar.selectbox('Salary Status', ['Select','Low', 'Medium', 'High'])
+    salary = st.selectbox('Salary Status', ['Select','Low', 'Medium', 'High'])
     st.write('')
-    satisfaction_level = st.sidebar.slider('Satisfaction Level', min_value=0.0, max_value=1.0, value=0.09, step=0.01)
+    satisfaction_level = st.slider('Satisfaction Level', min_value=0.0, max_value=1.0, value=0.09, step=0.01)
     st.write('')
-    last_evaluation = st.sidebar.slider('Last Evaluation(from Employer)', min_value=0.0, max_value=1.0, value=0.79, step=0.01)
+    last_evaluation = st.slider('Last Evaluation(from Employer)', min_value=0.0, max_value=1.0, value=0.79, step=0.01)
     st.write('')
-    number_project = st.sidebar.slider('Assigned Project', min_value=0, max_value=10, value=6, step=1)
+    number_project = st.slider('Assigned Project', min_value=0, max_value=10, value=6, step=1)
     st.write('')
-    average_montly_hours = st.sidebar.slider('Monthly Working Time(Hour)', min_value=50, max_value=400, value=293, step=1)
+    average_montly_hours = st.slider('Monthly Working Time(Hour)', min_value=50, max_value=400, value=293, step=1)
     st.write('')
-    time_spend_company = st.sidebar.slider('Time in the Company(Year)', min_value=1, max_value=10, value=5, step=1)
+    time_spend_company = st.slider('Time in the Company(Year)', min_value=1, max_value=10, value=5, step=1)
     st.write('')
-    Work_accident = st.sidebar.radio('Work Accident', ('True', 'False'))
+    Work_accident = st.radio('Work Accident', ('True', 'False'))
     st.write('')
-    promotion_last_5years = st.sidebar.radio('Get Promoted(Last 5 Year)', ('True', 'False'))
+    promotion_last_5years = st.radio('Get Promoted(Last 5 Year)', ('True', 'False'))
 
 
 # Create a dataframe using feature inputs
@@ -101,19 +146,31 @@ with open("openai_api.txt") as file:
     openai.api_key = file.read()
 
 
-messages = [{"role":"system", "content":"Hello Word"},]
+messages = [{"role":"system", "content":"Write like a world-known expert HR manager. Do not mention that you are HR manager."}]
 
 def AdviceGPT():
-    message = f"How can I increase the productivity of this employee? Do not exceed 150 words. Write item made. employee information{show_df}."
-    if message:
-        messages.append({"role":"system", "content":message})
-        response = openai.ChatCompletion.create(
-                    model = "gpt-3.5-turbo",
-                    messages = messages
-    )
-    gpt_reply = response["choices"][0]["message"]["content"]
-    messages.append({"role":"system", "content":gpt_reply})
+    with st.spinner('⚡Gearing up to blow your mind...'):
+        leave_text = ''
+        if result == 1:
+            leave_text = f'This employee is churn according to ml model with {result_proba[1]} score'
+        else:
+            leave_text = f'This employee is not churn according to ml model with {result_proba[0]} score'
+        show_df['Informations']['Monthly Working Time'] = str(show_df['Informations']['Monthly Working Time'])  + ' hours'
+        message = f"How can I increase the productivity of this employee? Employee information: {show_df}. {leave_text}. These are statistical test results based on hypothesis tests:{' '.join(statistical_findings)}. Consider employee information and evaluate each information. Include numbers and values. Also comment on churn with the ML score rounded. Write engaging conclusion."
+        if message:
+            messages.append({"role":"system", "content":message})
+            response = openai.ChatCompletion.create(
+                        model = "gpt-3.5-turbo",
+                        messages = messages
+        )
+        gpt_reply = response["choices"][0]["message"]["content"]
+        messages.append({"role":"system", "content":gpt_reply})
     st.success(gpt_reply)
+
+    filename = generate_filename()
+    generate_pdf(gpt_reply,filename)
+    with open(filename, "rb") as f:
+        st.download_button("Download PDF", f.read(), file_name=filename, mime="application/pdf")
 
 
 def CustomGPT():
@@ -137,8 +194,9 @@ def CustomGPT():
 
 
 # PREDICTION
-
-predict = st.button(":orange[Predict]")
+result = np.nan
+result_proba = np.nan
+predict = st.button("Predict",type='primary', use_container_width=True)
 if predict:
     if Departments == "Select" or salary == 'Select':
         st.warning('Be sure to enter department and salary information.')
