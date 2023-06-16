@@ -202,6 +202,7 @@ if predict:
         st.warning('Be sure to enter department and salary information.')
     else:
         result = model_churn.predict(model_df)[0]
+        result_proba = model_churn.predict_proba(model_df)[0]
         if result == 1:
             if select_theme == 'Dark':
                 st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/true.png")
