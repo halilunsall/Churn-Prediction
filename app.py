@@ -178,6 +178,3 @@ with open("messages.txt", "r") as file:
 with open("replys.txt", "r") as file:
     rep = file.read()
     st.info("Customer Support: "+rep.strip().split('\n')[-1])
-
-
-
