@@ -53,9 +53,8 @@ def html_options(text=None, align="left", size=12, weight="normal", style="norma
         image_style = f"background-color:{image_bg_color};" if image_bg_color else ""
         st.markdown(f"""<div style="text-align: {align};"> <a href="{to_link}"><img width="{image_width}" height="{image_height}" src="{image_source}" style="{image_style}" /></a></div>""", unsafe_allow_html=True)
 
-
-st.sidebar.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/theme.png")
-select_theme = st.sidebar.radio('', ['Dark', 'Light'])
+html_options(text='Please do not forget to change the theme you have chosen with the settings option in the upper right corner.', on='side', align='center', size=15, weight='bold')
+theme = st.sidebar.selectbox('', ['Dark', 'Light'])
 
 statistical_findings = [
   "There is a significant difference in average values between employees who left and those who stayed for column satisfaction_level.",
@@ -72,20 +71,20 @@ statistical_findings = [
 ]
 
 # HEAD TO PICTURE
-if select_theme=='Dark':
-    st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20churn%20prediction.png")
-else:
+if theme=='Light':
     st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Employee%20churn%20prediction.png")
+else:
+    st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20churn%20prediction.png")
 st.write('')
 st.write('')
 
 
 # SIDEBAR 
 with st.sidebar:
-    if select_theme == 'Dark':
-        st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20Information.png")
-    else:
+    if theme=='Light':
         st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Employee%20Information.png")
+    else:
+        st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Employee%20Information.png")
     st.write('')
     Departments = st.selectbox('Department', ['Select','Sales', 'Technical', 'Support', 'IT', 'Research and Development','Product Manager', 'Marketing', "Accounting", "Human Resources", "Management", "Others"])
     st.write('')
@@ -210,16 +209,16 @@ if predict:
         result = model_churn.predict(model_df)[0]
         result_proba = model_churn.predict_proba(model_df)[0]
         if result == 1:
-            if select_theme == 'Dark':
-                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/true.png")
-            else:
+            if theme=='Light':
                 st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/true.png")
+            else:
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/true.png")
             AdviceGPT()
         else:
-            if select_theme == 'Dark':
-                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/false.png")
-            else:
+            if theme=='Light':
                 st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/false.png")
+            else:
+                st.image("https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/false.png")
             AdviceGPT()
 
 
@@ -228,10 +227,10 @@ st.write("")
 st.write("")
 st.write("")
 st.write("")
-if select_theme == 'Dark':
-    html_options(on='image', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Contact%20LIVED.png', align='center', image_width=200)
-else:
+if theme=='Light':
     html_options(on='image', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_light/Contact%20LIVEL.png', align='center', image_width=200)
+else:
+    html_options(on='image', image_source='https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/images_dark/Contact%20LIVED.png', align='center', image_width=200)
 col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns(9)
 chat = col5.button(':green[CHAT]')
 
@@ -245,11 +244,20 @@ with open("replys.txt", "r") as file:
     st.info("Customer Support: "+rep.strip().split('\n')[-1])
 
 st.write('')
+
 col1, col2, col3 = st.columns(3)
 
-with col1:
-    html_options(on='link', to_link='https://www.linkedin.com/in/halilibrahimunsal/', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/linkedin.png")
-with col2:
-    html_options(on='link', to_link='https://github.com/halilunsall', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/git.png")
-with col3:
-    html_options(on='link', to_link='https://public.tableau.com/app/profile/halilunsal', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/tableau.png")
+if theme=='Light':
+    with col1:
+        html_options(on='link', to_link='https://www.linkedin.com/in/halilibrahimunsal/', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/linkedin1.png")
+    with col2:
+        html_options(on='link', to_link='https://github.com/halilunsall', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/git1.png")
+    with col3:
+        html_options(on='link', to_link='https://public.tableau.com/app/profile/halilunsal', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/tableau1.png")
+else:
+    with col1:
+        html_options(on='link', to_link='https://www.linkedin.com/in/halilibrahimunsal/', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/linkedin.png")
+    with col2:
+        html_options(on='link', to_link='https://github.com/halilunsall', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/git.png")
+    with col3:
+        html_options(on='link', to_link='https://public.tableau.com/app/profile/halilunsal', image_height=60, image_width=60, image_source="https://raw.githubusercontent.com/halilunsall/Churn-Prediction/main/logos/tableau.png")
